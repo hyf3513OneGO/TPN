@@ -179,8 +179,8 @@ def creatReq(server, name, to):
             return 0
         confirmTime -= 2
 
-    server.tell(name, "§4§k请求超时§r")
-    server.tell(to, "§4§k请求超时§r")
+    server.tell(name, "§4请求超时§r")
+    server.tell(to, "§4请求超时§r")
     removeReq(name, to)
 
 
