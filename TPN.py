@@ -6,12 +6,12 @@ PLUGIN_METADATA = {
     'id': 'TPN',
     'version': '1.0.0',
     'name': 'TP New',  # RText component is allowed
-    'description': 'Tp assistant for MCDR 1.x',  # RText component is allowed
+    'description': 'New Tp assistant for MCDR 1.x',  # RText component is allowed
     'author': 'hyf3513',
     'link': 'https://github.com',
     'dependencies': {
         'mcdreforged': '>=1.0.0',
-        'MinecraftDataAPI':'*'
+        'MinecraftDataAPI': '*'
     }
 }
 
@@ -29,14 +29,15 @@ userlist = []
 tpQueue = []
 
 
-
 # 实用小工具
+# 倒计时器
 def timeCounter(secs):
     while secs > 0:
         time.sleep(1)
         secs -= 1
 
 
+# tp执行模块
 @new_thread("newThread")
 def tpAfterSeconds(server, name, to, secs=5):
     server.tell(name, f"§2§l{to}§r已经§2同意§r您的请求")
@@ -49,7 +50,6 @@ def tpAfterSeconds(server, name, to, secs=5):
         secs -= 1
     server.tell(name, "§e§o§lTP start!§r")
     server.tell(to, "§e§o§lTP start!§r")
-    # server.execute(f"/execute positioned as {name} run tp {name} ~0 ~0 ~0")
     timeCounter(1)
     cmd = f"/tp {name} {to}"
     print(cmd)
@@ -57,7 +57,7 @@ def tpAfterSeconds(server, name, to, secs=5):
     return 0
 
 
-# 帮助信息模块
+# 加工帮助信息
 def print_message(server, info, msg, tell=True, prefix='[TPN] '):
     msg = prefix + msg
     if info.is_player and not tell:
@@ -66,17 +66,20 @@ def print_message(server, info, msg, tell=True, prefix='[TPN] '):
         server.reply(info, msg)
 
 
+# 显示帮助
 def showHelp(server, info):
     print_message(server, info, f'{PREFIX} §2§l <玩家> §r | 請求傳送自己到 §b§l <玩家> §r身邊')
     print_message(server, info, f'{PREFIX} §2§l <玩家> §r <yes/no> | 同意/拒絕傳送到自己身邊的請求')
+    print_message(server, info, f'{PREFIX} list 获取当前§3在线玩家§r列表')
 
 
+# 显示错误
 def showErr(server, info, errCode):
     print_message(server, info, f"{PREFIX}+{errMsg.get(errCode)}")
 
 
-# 命令控制模块
-@new_thread("commandParserid")
+# 命令解析与控制模块
+@new_thread("commandParser")
 def commandParser(server, info):
     command = info.content.split(" ")
     if command[0] != PREFIX:
@@ -118,6 +121,7 @@ def commandParser(server, info):
     return 0
 
 
+# 分析tp队列
 def checkReqlist(name, to):
     # 双方没有tp请求      return 0
     # 发起方有未完成tp请求 return 1
@@ -141,6 +145,7 @@ def checkReqlist(name, to):
     return 0
 
 
+# 更改tp列表中的某一行状态
 def changeReqStatus(name, to, status):
     for tp in tpQueue:
         if tp.get("name") == name and tp.get("to") == to:
@@ -148,12 +153,15 @@ def changeReqStatus(name, to, status):
     return 0
 
 
+# 删除tp队列中的一项
 def removeReq(name, to):
     for tp in tpQueue:
         if tp.get("name") == name and tp.get("to") == to:
             tpQueue.remove(tp)
     return 0
 
+
+# 添加一项到tp队列中
 
 def creatReq(server, name, to):
     confirmTime = 30
@@ -184,6 +192,7 @@ def creatReq(server, name, to):
     removeReq(name, to)
 
 
+# MCDR 事件监听器
 def on_user_info(server, info):
     commandParser(server, info)
 
