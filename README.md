@@ -31,6 +31,8 @@ Usages
 ``!!tp help``
 
 Show help messages
+
+![2102261421_1.png](https://img.maocdn.cn/img/2021/02/26/2102261421_1.png)
 <br>
 <br>
 <br>
@@ -40,6 +42,8 @@ Show help messages
 
  TP to ``<playername>``
 notice:It only raise a TP request to ``<player>``
+[![2102261422_2.png](https://img.maocdn.cn/img/2021/02/26/2102261422_2.png)](https://img.wang/image/sou-gou-jie-tu-21nian-02yue-26ri-1422-2.4OtwM)
+
 <br>
 <br>
 <br>
@@ -47,11 +51,16 @@ notice:It only raise a TP request to ``<player>``
 ``!!tp <playername> yes/no``
 
 Accept or refuse a TP request raised by ``<playername>``
-<br>
-<br>
-<br>
-``!!tp list``
+[![2102261424_3.png](https://img.maocdn.cn/img/2021/02/26/2102261424_3.png)](https://img.wang/image/sou-gou-jie-tu-21nian-02yue-26ri-1424-3.4OCE1)
 
+[![2102261424_4.png](https://img.maocdn.cn/img/2021/02/26/2102261424_4.png)](https://img.wang/image/sou-gou-jie-tu-21nian-02yue-26ri-1424-4.4OlYN)
+<br>
+<br>
+<br>
+
+``!!tp list``
 Show online players
+
+[![210226.png](https://img.maocdn.cn/img/2021/02/26/210226.png)](https://img.wang/image/sou-gou-jie-tu-21nian-02yue-26ri.4OF0u)
 
 

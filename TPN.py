@@ -68,8 +68,8 @@ def print_message(server, info, msg, tell=True, prefix='[TPN] '):
 
 # 显示帮助
 def showHelp(server, info):
-    print_message(server, info, f'{PREFIX} §2§l <玩家> §r | 請求傳送自己到 §b§l <玩家> §r身邊')
-    print_message(server, info, f'{PREFIX} §2§l <玩家> §r <yes/no> | 同意/拒絕傳送到自己身邊的請求')
+    print_message(server, info, f'{PREFIX} §2§l <玩家> §r | 请求传送到 §b§l <玩家> §的位置')
+    print_message(server, info, f'{PREFIX} §2§l <玩家> §r <yes/no> | 对传送请求进行拒绝或者同意')
     print_message(server, info, f'{PREFIX} list 获取当前§3在线玩家§r列表')
 
 
