@@ -1,5 +1,5 @@
 import time
-import random
+import math
 from mcdreforged.api.all import *
 
 PLUGIN_METADATA = {
@@ -11,7 +11,7 @@ PLUGIN_METADATA = {
     'link': 'https://github.com',
     'dependencies': {
         'mcdreforged': '>=1.0.0',
-        'MinecraftDataAPI': '*'
+        'minecraft_data_api': '*'
     }
 }
 
@@ -164,6 +164,9 @@ def removeReq(name, to):
 # 添加一项到tp队列中
 
 def creatReq(server, name, to):
+    api = server.get_plugin_instance('minecraft_data_api')
+    topos = api.get_player_coordinate(to)
+    namepos = api.get_player_coordinate(name)
     confirmTime = 30
     tpsecs = 5
     tpQueue.append(
@@ -174,8 +177,18 @@ def creatReq(server, name, to):
         })
     while confirmTime > 0:
         timeCounter(2)
-        server.tell(name, f"tp请求已经传至§b§l{to}§r,正在等待确认，剩余时间§3§l{confirmTime}s §r \n")
-        server.tell(to, f"§2§l {name} §r正在请求传送至你的身边，请输入§2§l!!tp {name} yes §r进行§2§l请求接受§r.\n")
+        # 获取玩家位置信息
+        topos = api.get_player_coordinate(to)
+        toposx = math.floor(topos.x)
+        toposy = math.floor(topos.y)
+        toposz = math.floor(topos.z)
+        namepos = api.get_player_coordinate(name)
+        nameposx = math.floor(namepos.x)
+        nameposy = math.floor(namepos.y)
+        nameposz = math.floor(namepos.z)
+        server.tell(name, f"tp请求已经传至§b§l{to}§r 坐标： [{toposx},{toposy},{toposz}] ,正在等待确认，剩余时间§3§l{confirmTime}s §r \n")
+        server.tell(to,
+                    f"§2§l{name} §r 坐标：[{nameposx},{nameposy},{nameposz}] 正在请求传送至你的身边，请输入§2§l!!tp {name} yes §r进行§2§l请求接受§r.\n")
         server.tell(to, f"§4§l输入!!tp {name} no §r将会§4§l拒绝请求 §r\n剩余确认时间：{confirmTime} s\n")
         if checkReqlist(name, to) == "yes":
             tpAfterSeconds(server, name, to, tpsecs)
@@ -206,3 +219,16 @@ def on_player_joined(server, player, info):
 def on_player_left(server, player):
     if player in userlist:
         userlist.remove(player)
+
+
+def on_load(server, old):
+    global userlist
+    if old is not None and hasattr(old, 'userlist'):
+        userlist = old.userlist
+    else:
+        userlist = []
+
+
+def on_server_stop(server, return_code):
+    global userlist
+    userlist = []
