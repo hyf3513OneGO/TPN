@@ -1,5 +1,7 @@
 import time
 import math
+import json
+import os
 from mcdreforged.api.all import *
 
 PLUGIN_METADATA = {
@@ -23,7 +25,9 @@ errMsg = {
     3: "您发起的§e请求§r仍在§6等待确认§r",
     4: "接收方有§6未确认§r的§e请求§r",
     5: "§e您有§6正在处理§r的请求§r",
-    6: "§e接收方有§6正在处理§r的请求§r"
+    6: "§e接收方有§6正在处理§r的请求§r",
+    7: "§c home坐标文件读取错误§r",
+    8: "还未设定§6home坐标§r，请先执行§b§l !!tp home set §r"
 }
 userlist = []
 tpQueue = []
@@ -71,6 +75,8 @@ def showHelp(server, info):
     print_message(server, info, f'{PREFIX} §2§l <玩家> §r | 请求传送到 §b§l <玩家> §的位置')
     print_message(server, info, f'{PREFIX} §2§l <玩家> §r <yes/no> | 对传送请求进行拒绝或者同意')
     print_message(server, info, f'{PREFIX} list 获取当前§3在线玩家§r列表')
+    print_message(server, info, f'{PREFIX} home §a一键回家§r')
+    print_message(server, info, f'{PREFIX} home set 设置§b回家坐标§r')
 
 
 # 显示错误
@@ -81,6 +87,7 @@ def showErr(server, info, errCode):
 # 命令解析与控制模块
 @new_thread("commandParser")
 def commandParser(server, info):
+    flag = ""
     command = info.content.split(" ")
     if command[0] != PREFIX:
         return 0
@@ -102,12 +109,14 @@ def commandParser(server, info):
             showHelp(server, info)
         elif command[1] == "list":
             server.tell(info.player, userlist)
+        elif command[1] == "home":
+            tpHome(server, info)
         else:
             showErr(server, info, 2)
     elif len(command) == 3:
-        name = command[1]
-        to = info.player
-        if name in userlist:
+        if command[2] in userlist:
+            name = command[1]
+            to = info.player
             if command[2] == "yes":
                 changeReqStatus(name, to, "yes")
                 return 0
@@ -116,6 +125,8 @@ def commandParser(server, info):
                 return 0
             else:
                 showHelp(server, info)
+        elif command[2] == "set" and command[1] == "home":
+            setHome(server, info)
         else:
             showErr(server, info, 1)
     return 0
@@ -203,6 +214,93 @@ def creatReq(server, name, to):
     server.tell(name, "§4请求超时§r")
     server.tell(to, "§4请求超时§r")
     removeReq(name, to)
+
+
+# 获取home坐标
+def getHome(server, info):
+    player = info.player
+    try:
+        with open("./plugins/homepos.json", "r") as f:
+            jsonR = json.load(f)
+            for item in jsonR:
+                if item.get("name") == player:
+                    pos = item.get("pos")
+                    server.say(pos)
+                    return pos
+                else:
+                    showErr(server, info, 8)
+                    return -1
+
+    except:
+        showErr(server, info, 7)
+        return -1
+
+
+# 添加/修改home坐标
+@new_thread("setHome")
+def setHome(server, info):
+    flag = ""  # 用于标识是被修改还是被添加
+    i = 0  # 用于标识读取json数组
+    player = info.player
+    if player in userlist:
+        api = server.get_plugin_instance("minecraft_data_api")
+        pos = api.get_player_coordinate(player)
+
+        if not os.path.exists("./plugins/homepos.json"):
+            with open("./plugins/homepos.json", "w+") as f:
+                f.writelines("[]")
+                server.say("home数据文件已经初始化")
+        try:
+            with open("./plugins/homepos.json", "r") as f:
+                server.tell(player, "正在§9§l读取位置文件§r")
+                try:
+                    jsonR = json.load(f)
+                except:
+                    pass
+                else:
+                    if jsonR != {}:
+                        for item in jsonR:
+                            if item.get("name") == player:
+                                server.tell(player, "\n正在§a§l修改位置文件§r")
+                                jsonR[i]["pos"] = [pos.x, pos.y, pos.z]
+                                flag = "edited"
+                        i += 1
+            if flag != "edited":
+                Nitem = {}
+                Nitem["name"] = player
+                Nitem["pos"] = [pos.x, pos.y, pos.z]
+                server.say(Nitem)
+                jsonR.append(Nitem)
+                server.tell(player, "正在§a§l新建位置§r")
+                server.tell(player, "§a§l新建位置§r完成！")
+            try:
+                with open("./plugins/homepos.json", "w") as f:
+                    json.dump(jsonR, f)
+            except:
+                showErr(server, info, 7)
+
+
+        except:
+            showErr(server, info, 7)
+            return -1
+
+    return 0
+
+
+# 执行回home
+def tpHome(server, info):
+    player = info.player
+    if player in userlist:
+        homePos = getHome(server, info)
+        posX = homePos[0]
+        posY = homePos[1]
+        posZ = homePos[2]
+        server.tell(player, f"即将回家! §2§l{homePos}§r ")
+        cmd = f"/tp {player} {posX} {posY} {posZ}"
+        server.execute(cmd)
+        return 0
+    else:
+        return -1
 
 
 # MCDR 事件监听器
