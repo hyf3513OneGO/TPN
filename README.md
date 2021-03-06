@@ -63,4 +63,9 @@ Show online players
 
 [![210226.png](https://img.maocdn.cn/img/2021/02/26/210226.png)](https://img.wang/image/sou-gou-jie-tu-21nian-02yue-26ri.4OF0u)
 
+```!!tp home```
+Back to the home point you set
+
+```!!tp home set```
+To set up a home point
 
