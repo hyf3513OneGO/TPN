@@ -6,7 +6,7 @@ from mcdreforged.api.all import *
 
 PLUGIN_METADATA = {
     'id': 'TPN',
-    'version': '1.0.0',
+    'version': '1.2.0',
     'name': 'TP New',  # RText component is allowed
     'description': 'New Tp assistant for MCDR 1.x',  # RText component is allowed
     'author': 'hyf3513',
