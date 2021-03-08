@@ -116,7 +116,6 @@ def commandParser(server, info):
         else:
             showErr(server, info, 2)
     elif len(command) == 3:
-        server.say(command[2])
         if command[1] in userlist:
             name = command[1]
             to = info.player
