@@ -6,16 +6,17 @@ from mcdreforged.api.all import *
 
 PLUGIN_METADATA = {
     'id': 'TPN',
-    'version': '1.2.0',
-    'name': 'TP New',  # RText component is allowed
-    'description': 'New Tp assistant for MCDR 1.x',  # RText component is allowed
+    'version': '1.3.0',
+    'name': 'TP New',
+    'description': 'New Tp assistant for MCDR 1.x',
     'author': 'hyf3513',
     'link': 'https://github.com',
     'dependencies': {
         'mcdreforged': '>=1.0.0',
-        'minecraft_data_api': '*'
+        'minecraft_data_api': '>=1.2.2'
     }
 }
+
 
 PREFIX = "!!tp"
 errMsg = {
@@ -108,13 +109,14 @@ def commandParser(server, info):
         elif command[1] == "help":
             showHelp(server, info)
         elif command[1] == "list":
-            server.tell(info.player, userlist)
+            get_userlist(server,info)
+            server.tell(info.player,userlist)
         elif command[1] == "home":
             tpHome(server, info)
         else:
             showErr(server, info, 2)
     elif len(command) == 3:
-        if command[2] in userlist:
+        if command[1] in userlist:
             name = command[1]
             to = info.player
             if command[2] == "yes":
@@ -305,28 +307,17 @@ def tpHome(server, info):
 
 # MCDR 事件监听器
 def on_user_info(server, info):
+    get_userlist(server,info)
     commandParser(server, info)
 
 
-# 用于获取在线用户列表
-def on_player_joined(server, player, info):
-    if player not in userlist:
-        userlist.append(player)
+# 利用MinecraftDataAPI来获取用户列表
+@new_thread("getPlayerlist")
+def get_userlist(server,info):
+    global user_amount, user_limit, userlist
+    api = server.get_plugin_instance('minecraft_data_api')
+    user_amount, user_limit, userlist = api.get_server_player_list()
 
 
-def on_player_left(server, player):
-    if player in userlist:
-        userlist.remove(player)
 
 
-def on_load(server, old):
-    global userlist
-    if old is not None and hasattr(old, 'userlist'):
-        userlist = old.userlist
-    else:
-        userlist = []
-
-
-def on_server_stop(server, return_code):
-    global userlist
-    userlist = []
