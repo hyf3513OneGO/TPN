@@ -6,7 +6,7 @@ from mcdreforged.api.all import *
 
 PLUGIN_METADATA = {
     'id': 'TPN',
-    'version': '1.3.0',
+    'version': '1.4.0',
     'name': 'TP New',
     'description': 'New Tp assistant for MCDR 1.x',
     'author': 'hyf3513',
