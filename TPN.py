@@ -13,7 +13,7 @@ PLUGIN_METADATA = {
     'link': 'https://github.com',
     'dependencies': {
         'mcdreforged': '>=1.0.0',
-        'minecraft_data_api': '*'
+        'minecraft_data_api': '>=1.2.2'
     }
 }
 
